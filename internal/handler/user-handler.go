@@ -73,7 +73,7 @@ func (h *AuthHandler) Refresh(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("refresh_token", refreshToken, 3600*24*7, "api/v1/auth/refresh", "localhost", true, true)
+	c.SetCookie("refresh_token", refreshToken, 3600*24*7, "/", "localhost", true, true)
 
 	response.SuccessResponse(c, "Token refreshed successfully", gin.H{
 		"access_token":  accessToken,

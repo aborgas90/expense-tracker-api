@@ -23,6 +23,10 @@ func main() {
 	categoryService := service.NewCategoryService(categoryRepo)
 	categoryHandler := handler.NewCategoryHandler(categoryService)
 
+	transactionRepo := repo.NewTransactionRepo(conn)
+	transactionService := service.NewTransactionService(transactionRepo)
+	transactionHandler := handler.NewTransactionHandler(transactionService)
+
 	router := gin.Default()
 
 	sqlDB, err := conn.DB()
@@ -48,10 +52,14 @@ func main() {
 		v1.POST("/auth/register", userHandler.RegisterHandler)
 		v1.POST("/auth/login", userHandler.LoginHandler)
 		v1.POST("/auth/refresh", userHandler.Refresh)
+		//categories
 		v1.GET("/categories", middleware.AuthMiddleware(), categoryHandler.GetCategoriesByUserID)
 		v1.POST("/categories", middleware.AuthMiddleware(), categoryHandler.CreateCategory)
 		v1.PUT("/categories/:id", middleware.AuthMiddleware(), categoryHandler.UpdateCategory)
 		v1.DELETE("/categories/:id", middleware.AuthMiddleware(), categoryHandler.DeleteCategory)
+		//transaction
+		v1.POST("/transaction", middleware.AuthMiddleware(), transactionHandler.CreateTransactionUser)
+		v1.GET("/transaction", middleware.AuthMiddleware(), transactionHandler.GetTransactionByUser)
 	}
 
 	fs := http.FileServer(http.Dir("static/"))

@@ -72,3 +72,8 @@ func validateToken(tokenStr string, secret []byte) (*JWTCLAIM, error) {
 	}
 	return claims, nil
 }
+
+
+// func CSRFToken() string {
+
+// }

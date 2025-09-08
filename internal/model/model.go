@@ -14,7 +14,7 @@ type User struct {
 
 type Category struct {
 	ID        uint      `gorm:"primaryKey;autoIncrement" json:"id"`
-	UserID    uint      `json:"user_id"` // follow convention
+	UserID    uint      `json:"user_id"`
 	User      User      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"user"`
 	Type      string    `gorm:"not null" json:"type"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
@@ -29,6 +29,6 @@ type Transaction struct {
 	Amount     float64   `gorm:"not null" json:"amount"`
 	Currency   string    `gorm:"size:3;not null;default:IDR" json:"currency"`
 	OccurredAt time.Time `gorm:"index;not null" json:"occurred_at"`
-	Note       *string   `json:"note"`
+	Note       string   `json:"note"`
 	CreatedAt  time.Time `gorm:"autoCreateTime" json:"created_at"`
 }
