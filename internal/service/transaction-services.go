@@ -67,7 +67,7 @@ func (s *TransactionService) CreateTransactionUser(userId uint, req *dto.Request
 		Note:       req.Note,
 		Amount:     req.Amount,
 		Currency:   req.Currency,
-		OccurredAt: parsedTime,	
+		OccurredAt: parsedTime,
 	}
 
 	if err := s.repo.CreateTransactionUser(newTransaction); err != nil {
@@ -84,6 +84,92 @@ func (s *TransactionService) CreateTransactionUser(userId uint, req *dto.Request
 		Currency:   newTransaction.Currency,
 		CreatedAt:  newTransaction.CreatedAt.Format(time.RFC3339),
 	}, nil
+}
+
+func (s *TransactionService) GetTransactionById(userId uint, id uint) (*dto.ResponseTransaction, error) {
+	txs, err := s.repo.GetTransactionById(userId, id) // now return model.Transaction, not []model.Transaction
+	if err != nil {
+		return nil, err
+	}
+
+	var catID uint
+	var catName string
+	if txs.CategoryID != nil {
+		catID = *txs.CategoryID
+	}
+	if txs.Category != nil {
+		catName = txs.Category.Type
+	}
+
+	return &dto.ResponseTransaction{
+		ID:           txs.ID,
+		UserId:       txs.UserID,
+		CategoryId:   catID,
+		CategoryName: catName,
+		Amount:       txs.Amount,
+		Currency:     txs.Currency,
+		OccuredAt:    txs.OccurredAt.Format(time.RFC3339),
+		Note:         txs.Note,
+		CreatedAt:    txs.CreatedAt.Format(time.RFC3339),
+	}, nil
+}
+
+func (s *TransactionService) UpdateTransactionUser(
+	userId uint,
+	id uint,
+	categoryId uint,
+	amount float64,
+	currency string,
+	occuredAt string,
+	note string,
+) (*dto.ResponseTransaction, error) {
+
+	parsedTime, err := time.Parse(time.RFC3339, occuredAt)
+	if err != nil {
+		return nil, fmt.Errorf("invalid occuredAt (expect RFC3339): %w", err)
+	}
+
+	txs, err := s.repo.UpdateTransaction(
+		userId,
+		id,
+		categoryId,
+		amount,
+		currency,
+		parsedTime,
+		note,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	var catID uint
+	var catName string
+	if txs.CategoryID != nil {
+		catID = *txs.CategoryID
+	}
+	if txs.Category != nil {
+		catName = txs.Category.Type
+	}
+
+	return &dto.ResponseTransaction{
+		ID:           txs.ID,
+		UserId:       txs.UserID,
+		CategoryId:   catID,
+		CategoryName: catName,
+		Amount:       txs.Amount,
+		Currency:     txs.Currency,
+		OccuredAt:    txs.OccurredAt.Format(time.RFC3339),
+		Note:         txs.Note,
+		CreatedAt:    txs.CreatedAt.Format(time.RFC3339),
+	}, nil
+}
+
+func (s *TransactionService) DeleteTransaction(userId uint, id uint) (int64, error) {
+	rows, err := s.repo.DeleteTransaction(userId, id)
+	if err != nil {
+		return 0, err
+	}
+	return rows, nil
 }
 
 func UintPtr(v uint) *uint {

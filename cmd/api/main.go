@@ -60,6 +60,9 @@ func main() {
 		//transaction
 		v1.POST("/transaction", middleware.AuthMiddleware(), transactionHandler.CreateTransactionUser)
 		v1.GET("/transaction", middleware.AuthMiddleware(), transactionHandler.GetTransactionByUser)
+		v1.GET("/transaction/:id", middleware.AuthMiddleware(), transactionHandler.GetTransactionById)
+		v1.PUT("/transaction/:id", middleware.AuthMiddleware(), transactionHandler.UpdateTransaction)
+		v1.DELETE("/transaction/:id", middleware.AuthMiddleware(), transactionHandler.DeleteTransaction)
 	}
 
 	fs := http.FileServer(http.Dir("static/"))
