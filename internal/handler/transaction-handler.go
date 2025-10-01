@@ -147,6 +147,68 @@ func (h *TransactionHandler) DeleteTransaction(c *gin.Context) {
 	response.SuccessResponse(c, "Successfully to delete transaction id", data)
 }
 
+func (h *TransactionHandler) SummaryTransaction(c *gin.Context) {
+	userID, exists := c.Get("user_id")
+	monthStr := c.Query("month")
+	yearStr := c.Query("year")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	month, err := strconv.Atoi(monthStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid month"})
+		return
+	}
+
+	year, err := strconv.Atoi(yearStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid year"})
+		return
+	}
+
+	rows, err := h.svc.SummaryTransaction(uint(userID.(uint)), month, year)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	response.SuccessResponse(c, "Successfully to delete transaction id", rows)
+}
+
+func (h *TransactionHandler) CheckSurplusDeficitTransaction(c *gin.Context) {
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	rows, err := h.svc.CheckSurplusDeficitTransaction(uint(userID.(uint)))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	response.SuccessResponse(c, "Successfully to data summary surplus & deficit", rows)
+}
+
+func (h *TransactionHandler) Last7Transaction(c *gin.Context) {
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	rows, err := h.svc.Last7Transaction(uint(userID.(uint)))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	response.SuccessResponse(c, "Successfully to data last 7 transaction", rows)
+}
+
 func StringToUint(s string) uint {
 	i, _ := strconv.Atoi(s)
 	return uint(i)

@@ -175,3 +175,54 @@ func (s *TransactionService) DeleteTransaction(userId uint, id uint) (int64, err
 func UintPtr(v uint) *uint {
 	return &v
 }
+
+type SummaryTransaction struct {
+	Year    float64
+	Month   float64
+	Income  float64
+	Expense float64
+	Balance float64
+	Status  string
+}
+
+func (s *TransactionService) SummaryTransaction(userId uint, month int, year int) (*SummaryTransaction, error) {
+	res, err := s.repo.SummaryTransaction(userId, month, year)
+	if err != nil {
+		return nil, err
+	}
+
+	if res == nil {
+		return &SummaryTransaction{Income: 0, Expense: 0}, nil
+	}
+
+	return &SummaryTransaction{
+		Income:  res.Income,
+		Expense: res.Expense,
+		Balance: res.Balance,
+	}, nil
+}
+
+func (s *TransactionService) CheckSurplusDeficitTransaction(userId uint) ([]SummaryTransaction, error) {
+	res, err := s.repo.CheckSurplusTransaction(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	var summaries []SummaryTransaction
+	for _, r := range res {
+		summaries = append(summaries, SummaryTransaction{
+			Year:    r.Year,
+			Month:   r.Month,
+			Income:  r.Income,
+			Expense: r.Expense,
+			Balance: r.Balance,
+			Status:  r.Status,
+		})
+	}
+
+	return summaries, nil
+}
+
+func (s *TransactionService) Last7Transaction(userId uint) ([]dto.LastTransactionDTO, error) {
+	return s.repo.Last7Transaction(userId)
+}

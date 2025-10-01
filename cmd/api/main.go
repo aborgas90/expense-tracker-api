@@ -4,12 +4,16 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/aborgas90/expense-tracker-api/internal/handler"
+	"github.com/aborgas90/expense-tracker-api/internal/helper"
 	middleware "github.com/aborgas90/expense-tracker-api/internal/middleware"
 	"github.com/aborgas90/expense-tracker-api/internal/platform/db"
 	"github.com/aborgas90/expense-tracker-api/internal/repo"
 	"github.com/aborgas90/expense-tracker-api/internal/service"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,6 +32,19 @@ func main() {
 	transactionHandler := handler.NewTransactionHandler(transactionService)
 
 	router := gin.Default()
+
+	//setup cors
+	config := cors.Config{
+		AllowOrigins:     []string{os.Getenv("FE_APP")}, // tanpa "/"
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}
+
+	router.Use(helper.RateLimiter())
+	router.Use(cors.New(config))
 
 	sqlDB, err := conn.DB()
 	if err != nil {
@@ -63,6 +80,11 @@ func main() {
 		v1.GET("/transaction/:id", middleware.AuthMiddleware(), transactionHandler.GetTransactionById)
 		v1.PUT("/transaction/:id", middleware.AuthMiddleware(), transactionHandler.UpdateTransaction)
 		v1.DELETE("/transaction/:id", middleware.AuthMiddleware(), transactionHandler.DeleteTransaction)
+
+		//dashboard
+		v1.GET("/dashboard", middleware.AuthMiddleware(), transactionHandler.SummaryTransaction)
+		v1.GET("/dashboard/check-surplus-defisit", middleware.AuthMiddleware(), transactionHandler.CheckSurplusDeficitTransaction)
+		v1.GET("/dashboard/last-transaction", middleware.AuthMiddleware(), transactionHandler.Last7Transaction)
 	}
 
 	fs := http.FileServer(http.Dir("static/"))

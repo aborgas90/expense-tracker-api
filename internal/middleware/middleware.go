@@ -1,15 +1,18 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin" 
-	"strings"
+	"fmt"
 	"net/http"
+	"strings"
+
 	token "github.com/aborgas90/expense-tracker-api/internal/auth"
+	"github.com/gin-gonic/gin"
 )
 
 func AuthMiddleware() gin.HandlerFunc {
     return func(c *gin.Context) {
         authHeader := c.GetHeader("Authorization")
+        fmt.Println("AUTH HEADER :: ",authHeader)
         if authHeader == "" {
             c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing token"})
             return

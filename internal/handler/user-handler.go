@@ -48,6 +48,8 @@ func (h *AuthHandler) LoginHandler(c *gin.Context) {
 		return
 	}
 
+	c.SetCookie("access_token", res.AccessToken, 3600, "/", "", false, true)
+
 	response.SuccessResponse(c, "Login successful", res)
 }
 
