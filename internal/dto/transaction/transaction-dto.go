@@ -23,6 +23,15 @@ type ResponseTransaction struct {
 	CategoryName string  `json:"categoryName,omitempty"` // opsional, kalau preload Category
 }
 
+type SummaryTransaction struct {
+    Year    float64 `json:"year,omitempty"`
+    Month   float64 `json:"month,omitempty"`
+    Income  float64 `json:"income"`
+    Expense float64 `json:"expense"`
+    Balance float64 `json:"balance"`
+    Status  string  `json:"status,omitempty"`
+}
+
 type UpdateTransactionRequest struct {
 	CategoryId uint    `json:"categoryId" binding:"required"`
 	OccuredAt  string  `json:"occuredAt"  binding:"required"`

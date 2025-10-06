@@ -3,23 +3,14 @@ package repo
 import (
 	"time"
 
-	"github.com/aborgas90/expense-tracker-api/internal/model"
 	dto "github.com/aborgas90/expense-tracker-api/internal/dto/transaction"
-	
+	"github.com/aborgas90/expense-tracker-api/internal/model"
+
 	"gorm.io/gorm"
 )
 
 type TransactionRepo struct {
 	db *gorm.DB
-}
-
-type SummaryTransaction struct {
-	Year    float64
-	Month   float64
-	Income  float64
-	Expense float64
-	Balance float64
-	Status  string
 }
 
 func NewTransactionRepo(db *gorm.DB) *TransactionRepo {
@@ -80,8 +71,8 @@ func (t *TransactionRepo) CreateTransactionUser(T *model.Transaction) error {
 	return t.db.Create(T).Error
 }
 
-func (r *TransactionRepo) SummaryTransaction(userId uint, month int, year int) (*SummaryTransaction, error) {
-	var summary SummaryTransaction
+func (r *TransactionRepo) SummaryTransaction(userId uint, month int, year int) (*dto.SummaryTransaction, error) {
+	var summary dto.SummaryTransaction
 
 	err := r.db.
 		Table("transactions t").
@@ -101,8 +92,8 @@ func (r *TransactionRepo) SummaryTransaction(userId uint, month int, year int) (
 	return &summary, nil
 }
 
-func (r *TransactionRepo) CheckSurplusTransaction(userId uint) ([]SummaryTransaction, error) {
-	var summary []SummaryTransaction
+func (r *TransactionRepo) CheckSurplusTransaction(userId uint) ([]dto.SummaryTransaction, error) {
+	var summary []dto.SummaryTransaction
 
 	err := r.db.Table("transactions t").Select(`YEAR(t.occurred_at) AS year,
     MONTH(t.occurred_at) AS month,
@@ -122,7 +113,6 @@ func (r *TransactionRepo) CheckSurplusTransaction(userId uint) ([]SummaryTransac
 	}
 	return summary, nil
 }
-
 
 func (r *TransactionRepo) Last7Transaction(userId uint) ([]dto.LastTransactionDTO, error) {
 	var res []dto.LastTransactionDTO

@@ -31,6 +31,10 @@ func main() {
 	transactionService := service.NewTransactionService(transactionRepo)
 	transactionHandler := handler.NewTransactionHandler(transactionService)
 
+	goalsRepo := repo.NewGoalRepo(conn)
+	goalsService := service.NewGoalsService(goalsRepo)
+	goalsHandler := handler.NewGoalsHandler(goalsService)
+
 	router := gin.Default()
 
 	//setup cors
@@ -85,10 +89,15 @@ func main() {
 		v1.GET("/dashboard", middleware.AuthMiddleware(), transactionHandler.SummaryTransaction)
 		v1.GET("/dashboard/check-surplus-defisit", middleware.AuthMiddleware(), transactionHandler.CheckSurplusDeficitTransaction)
 		v1.GET("/dashboard/last-transaction", middleware.AuthMiddleware(), transactionHandler.Last7Transaction)
+
+		//goals
+		v1.GET("/dashboard/goals/", middleware.AuthMiddleware(), goalsHandler.GetGoalDataByIdUser)
+		v1.POST("/dashboard/goals/", middleware.AuthMiddleware(), goalsHandler.CreateGoalsHandler)
+		v1.PUT("/dashboard/goals/:id", middleware.AuthMiddleware(), goalsHandler.UpdateGoalsHandler)
+		v1.DELETE("/dashboard/goals/:id", middleware.AuthMiddleware(), goalsHandler.DeleteGoalsHandler)
 	}
 
 	fs := http.FileServer(http.Dir("static/"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
-
 	router.Run(":8080")
 }

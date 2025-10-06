@@ -40,3 +40,25 @@ type TransactionType struct {
 	Name      string    `gorm:"not null" json:"name"` // contoh: Income, Expense
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 }
+
+type Goal struct {
+	ID            uint      `gorm:"primaryKey;autoIncrement" json:"id"`
+	UserID        uint      `gorm:"not null;index" json:"user_id"`
+	User          User      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"user"`
+	Title         string    `gorm:"not null" json:"title"`
+	TargetAmount  float64   `gorm:"not null" json:"target_amount"`
+	CurrentAmount float64   `gorm:"not null;default:0" json:"current_amount"`
+	Deadline      time.Time `gorm:"default:null" json:"deadline"`
+	Status        string    `gorm:"default:'in-progress'" json:"status"` // in-progress, completed, canceled
+	CreatedAt     time.Time `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt     time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+}
+
+type GoalDeposit struct {
+	ID        uint      `gorm:"primaryKey;autoIncrement" json:"id"`
+	GoalID    uint      `gorm:"not null;index" json:"goal_id"`
+	Goal      Goal      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"goal"`
+	Amount    float64   `gorm:"not null" json:"amount"`
+	Note      string    `json:"note"`
+	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
+}

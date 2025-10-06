@@ -176,41 +176,32 @@ func UintPtr(v uint) *uint {
 	return &v
 }
 
-type SummaryTransaction struct {
-	Year    float64
-	Month   float64
-	Income  float64
-	Expense float64
-	Balance float64
-	Status  string
-}
-
-func (s *TransactionService) SummaryTransaction(userId uint, month int, year int) (*SummaryTransaction, error) {
+func (s *TransactionService) SummaryTransaction(userId uint, month int, year int) (*dto.SummaryTransaction, error) {
 	res, err := s.repo.SummaryTransaction(userId, month, year)
 	if err != nil {
 		return nil, err
 	}
 
 	if res == nil {
-		return &SummaryTransaction{Income: 0, Expense: 0}, nil
+		return &dto.SummaryTransaction{Income: 0, Expense: 0}, nil
 	}
 
-	return &SummaryTransaction{
+	return &dto.SummaryTransaction{
 		Income:  res.Income,
 		Expense: res.Expense,
 		Balance: res.Balance,
 	}, nil
 }
 
-func (s *TransactionService) CheckSurplusDeficitTransaction(userId uint) ([]SummaryTransaction, error) {
+func (s *TransactionService) CheckSurplusDeficitTransaction(userId uint) ([]dto.SummaryTransaction, error) {
 	res, err := s.repo.CheckSurplusTransaction(userId)
 	if err != nil {
 		return nil, err
 	}
 
-	var summaries []SummaryTransaction
+	var summaries []dto.SummaryTransaction
 	for _, r := range res {
-		summaries = append(summaries, SummaryTransaction{
+		summaries = append(summaries, dto.SummaryTransaction{
 			Year:    r.Year,
 			Month:   r.Month,
 			Income:  r.Income,
