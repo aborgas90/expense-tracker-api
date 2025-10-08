@@ -31,7 +31,7 @@ func (h *AuthHandler) RegisterHandler(c *gin.Context) {
 		return
 	}
 
-	response.SuccessResponse(c, "User registered successfully", res)
+	response.SuccessResponse(c, 201, "User registered successfully", res)
 }
 
 func (h *AuthHandler) LoginHandler(c *gin.Context) {
@@ -50,7 +50,7 @@ func (h *AuthHandler) LoginHandler(c *gin.Context) {
 
 	c.SetCookie("access_token", res.AccessToken, 3600, "/", "", false, true)
 
-	response.SuccessResponse(c, "Login successful", res)
+	response.SuccessResponse(c, 200, "Login successful", res)
 }
 
 func (h *AuthHandler) Refresh(c *gin.Context) {
@@ -77,7 +77,7 @@ func (h *AuthHandler) Refresh(c *gin.Context) {
 
 	c.SetCookie("refresh_token", refreshToken, 3600*24*7, "/", "localhost", true, true)
 
-	response.SuccessResponse(c, "Token refreshed successfully", gin.H{
+	response.SuccessResponse(c, 200, "Token refreshed successfully", gin.H{
 		"access_token":  accessToken,
 		"refresh_token": refreshToken,
 	})

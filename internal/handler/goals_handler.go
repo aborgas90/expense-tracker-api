@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	dto "github.com/aborgas90/expense-tracker-api/internal/dto/goals"
@@ -42,7 +43,7 @@ func (h *GoalsHandler) CreateGoalsHandler(c *gin.Context) {
 		return
 	}
 
-	response.SuccessResponse(c, "Successfully Create Goals Target", newGoals)
+	response.SuccessResponse(c, 201, "Successfully Create Goals Target", newGoals)
 }
 
 func (h *GoalsHandler) GetGoalDataByIdUser(c *gin.Context) {
@@ -58,7 +59,7 @@ func (h *GoalsHandler) GetGoalDataByIdUser(c *gin.Context) {
 		return
 	}
 
-	response.SuccessResponse(c, "Successfull to get goals data", result)
+	response.SuccessResponse(c, 200, "Successfull to get goals data", result)
 }
 
 func (h *GoalsHandler) UpdateGoalsHandler(c *gin.Context) {
@@ -106,18 +107,16 @@ func (h *GoalsHandler) UpdateGoalsHandler(c *gin.Context) {
 	}
 
 	// Send JSON response
-	response.SuccessResponse(c, "Success to update data goals", responseData)
+	response.SuccessResponse(c, 200, "Success to update data goals", responseData)
 }
 
 func (h *GoalsHandler) DeleteGoalsHandler(c *gin.Context) {
-	// Get user_id from context
-	userId, exists := c.Get("user_id")
-	if !exists {
+	userId, ok := c.Get("user_id")
+	if !ok {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 
-	// Parse goal ID from URL
 	paramId := c.Param("id")
 	id64, err := strconv.ParseUint(paramId, 10, 32)
 	if err != nil {
@@ -126,11 +125,17 @@ func (h *GoalsHandler) DeleteGoalsHandler(c *gin.Context) {
 	}
 	goalID := uint(id64)
 
-	res, err := h.svc.DeleteGoalsDataById(userId.(uint), goalID)
+	// 👇 ignore the first return value
+	_, err = h.svc.DeleteGoalsDataById(userId.(uint), goalID)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		if strings.Contains(err.Error(), "not found") {
+			c.JSON(http.StatusNotFound, gin.H{"error": "goal not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	response.SuccessResponse(c, "Success to Delete Goals Data", nil)
+	// ✅ Return 204 No Content
+	response.SuccessResponse(c, 204, "success to delete data", "")
 }

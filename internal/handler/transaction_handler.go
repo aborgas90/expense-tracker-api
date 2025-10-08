@@ -38,7 +38,7 @@ func (h *TransactionHandler) CreateTransactionUser(c *gin.Context) {
 		return
 	}
 
-	response.SuccessResponse(c, "Successfully to create transaction", newTransaction)
+	response.SuccessResponse(c, 201, "Successfully to create transaction", newTransaction)
 }
 
 func (h *TransactionHandler) GetTransactionByUser(c *gin.Context) {
@@ -54,7 +54,7 @@ func (h *TransactionHandler) GetTransactionByUser(c *gin.Context) {
 		return
 	}
 
-	response.SuccessResponse(c, "Successfully to get data transaction", getTransaction)
+	response.SuccessResponse(c, 200, "Successfully to get data transaction", getTransaction)
 }
 
 func (h *TransactionHandler) GetTransactionById(c *gin.Context) {
@@ -73,7 +73,7 @@ func (h *TransactionHandler) GetTransactionById(c *gin.Context) {
 		return
 	}
 
-	response.SuccessResponse(c, "Successful to get data transaction id", result)
+	response.SuccessResponse(c, 200, "Successful to get data transaction id", result)
 }
 
 func (h *TransactionHandler) UpdateTransaction(c *gin.Context) {
@@ -115,7 +115,7 @@ func (h *TransactionHandler) UpdateTransaction(c *gin.Context) {
 		return
 	}
 
-	response.SuccessResponse(c, "Successfully to Update Transaction", result)
+	response.SuccessResponse(c, 200, "Successfully to Update Transaction", result)
 }
 
 func (h *TransactionHandler) DeleteTransaction(c *gin.Context) {
@@ -144,7 +144,7 @@ func (h *TransactionHandler) DeleteTransaction(c *gin.Context) {
 		data = []interface{}{} // tetap kosong meskipun ada row yg dihapus
 	}
 
-	response.SuccessResponse(c, "Successfully to delete transaction id", data)
+	response.SuccessResponse(c, 204, "Successfully to delete transaction id", data)
 }
 
 func (h *TransactionHandler) SummaryTransaction(c *gin.Context) {
@@ -174,7 +174,7 @@ func (h *TransactionHandler) SummaryTransaction(c *gin.Context) {
 		return
 	}
 
-	response.SuccessResponse(c, "Successfully to delete transaction id", rows)
+	response.SuccessResponse(c, 200, "Successfully to get transaction id", rows)
 }
 
 func (h *TransactionHandler) CheckSurplusDeficitTransaction(c *gin.Context) {
@@ -190,7 +190,7 @@ func (h *TransactionHandler) CheckSurplusDeficitTransaction(c *gin.Context) {
 		return
 	}
 
-	response.SuccessResponse(c, "Successfully to data summary surplus & deficit", rows)
+	response.SuccessResponse(c, 200, "Successfully to data summary surplus & deficit", rows)
 }
 
 func (h *TransactionHandler) Last7Transaction(c *gin.Context) {
@@ -206,7 +206,7 @@ func (h *TransactionHandler) Last7Transaction(c *gin.Context) {
 		return
 	}
 
-	response.SuccessResponse(c, "Successfully to data last 7 transaction", rows)
+	response.SuccessResponse(c, 200, "Successfully to data last 7 transaction", rows)
 }
 
 func StringToUint(s string) uint {

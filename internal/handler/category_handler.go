@@ -37,7 +37,9 @@ func (h *CategoryHandler) GetCategoriesByUserID(c *gin.Context) {
 		return
 	}
 
-	response.SuccessResponse(c, "Categories fetched successfully",
+	response.SuccessResponse(c,
+		200,
+		"Categories fetched successfully",
 		categories,
 	)
 }
@@ -63,7 +65,7 @@ func (h *CategoryHandler) CreateCategory(c *gin.Context) {
 		return
 	}
 
-	response.SuccessResponse(c, "Category created successfully", category)
+	response.SuccessResponse(c, 201, "Category created successfully", category)
 }
 
 func (h *CategoryHandler) UpdateCategory(c *gin.Context) {
@@ -90,7 +92,7 @@ func (h *CategoryHandler) UpdateCategory(c *gin.Context) {
 
 	fmt.Println("Updated Category:", req)
 
-	response.SuccessResponse(c, "Category updated successfully", updateCategory)
+	response.SuccessResponse(c, 200, "Category updated successfully", updateCategory)
 }
 
 func (h *CategoryHandler) DeleteCategory(c *gin.Context) {
@@ -103,5 +105,5 @@ func (h *CategoryHandler) DeleteCategory(c *gin.Context) {
 		return
 	}
 
-	response.SuccessResponse(c, "Category deleted successfully", nil)
+	response.SuccessResponse(c, 204, "Category deleted successfully", nil)
 }

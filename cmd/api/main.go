@@ -35,6 +35,10 @@ func main() {
 	goalsService := service.NewGoalsService(goalsRepo)
 	goalsHandler := handler.NewGoalsHandler(goalsService)
 
+	goalsDepoRepo := repo.NewGoalsDepositRepo(conn)
+	goalsDepoService := service.NewGoalsDepoService(goalsDepoRepo)
+	goalsDepoHandler := handler.NewGoalsDepoHandler(goalsDepoService)
+
 	router := gin.Default()
 
 	//setup cors
@@ -95,6 +99,10 @@ func main() {
 		v1.POST("/dashboard/goals/", middleware.AuthMiddleware(), goalsHandler.CreateGoalsHandler)
 		v1.PUT("/dashboard/goals/:id", middleware.AuthMiddleware(), goalsHandler.UpdateGoalsHandler)
 		v1.DELETE("/dashboard/goals/:id", middleware.AuthMiddleware(), goalsHandler.DeleteGoalsHandler)
+
+		//goalsdepo
+		v1.GET("/dashboard/goals-depo/:id", middleware.AuthMiddleware(), goalsDepoHandler.GetDepoByID)
+		v1.POST("/dashboard/goals-depo/", middleware.AuthMiddleware(), goalsDepoHandler.CreateDepoHandler)
 	}
 
 	fs := http.FileServer(http.Dir("static/"))
