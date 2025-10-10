@@ -14,5 +14,6 @@ type ResponseGoals struct {
 	Target_amount  float64 `json:"target_amount"`
 	Current_amount float64 `json:"current_amount"`
 	Deadline       string  `json:"deadline"`
+	Percentage     float64 `json:"percentage,omitempty"`
 	Created_at     string  `json:"created_at"`
 }

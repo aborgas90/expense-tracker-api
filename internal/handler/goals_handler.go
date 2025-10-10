@@ -136,6 +136,27 @@ func (h *GoalsHandler) DeleteGoalsHandler(c *gin.Context) {
 		return
 	}
 
-	// ✅ Return 204 No Content
 	response.SuccessResponse(c, 204, "success to delete data", "")
+}
+
+func (h *GoalsHandler) GetGoalsById(c *gin.Context) {
+	userID, exists := c.Get("user_id")
+	if !exists {
+		response.ErrorResponse(c, http.StatusUnauthorized, "Unauthorized access")
+		return
+	}
+
+	goalID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		response.ErrorResponse(c, http.StatusBadRequest, "Invalid goal ID format")
+		return
+	}
+
+	result, err := h.svc.GetGoalsById(userID.(uint), uint(goalID))
+	if err != nil {
+		response.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	response.SuccessResponse(c, http.StatusOK, "Successfully retrieved goal data", result)
 }

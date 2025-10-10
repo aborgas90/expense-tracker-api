@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"math"
 	"time"
 
 	dto "github.com/aborgas90/expense-tracker-api/internal/dto/goals"
@@ -57,28 +58,44 @@ func (g *GoalsServices) CreateGoalsTarget(userId uint, req *dto.RequestGoals) (*
 }
 
 func (g *GoalsServices) GetGoalDataByIdUser(userId uint) ([]dto.ResponseGoals, error) {
-	// ambil data dari repository
-	goals, err := g.repo.GetGoalDataByIdUser(userId)
+	data, err := g.repo.GetGoalDataByIdUser(userId)
 	if err != nil {
 		return nil, err
 	}
 
-	// mapping ke slice of dto.ResponseGoals
 	var res []dto.ResponseGoals
-	for _, goal := range goals {
+	for _, goal := range data {
+		// --- Handle nullable deadline
+		var deadlineStr string
+		if val, ok := goal["deadline"]; ok && val != nil {
+			if t, ok := val.(time.Time); ok {
+				deadlineStr = t.Format(time.RFC3339)
+			}
+		} else {
+			deadlineStr = "" // atau "N/A"
+		}
+
+		// --- Handle created_at (optional juga biar gak panic)
+		var createdAtStr string
+		if val, ok := goal["created_at"]; ok && val != nil {
+			if t, ok := val.(time.Time); ok {
+				createdAtStr = t.Format(time.RFC3339)
+			}
+		}
+
 		res = append(res, dto.ResponseGoals{
-			Id:             goal.ID,
-			Title:          goal.Title,
-			Target_amount:  goal.TargetAmount,
-			Current_amount: goal.CurrentAmount,
-			Deadline:       goal.Deadline.Format(time.RFC3339),
-			Created_at:     goal.CreatedAt.Format(time.RFC3339),
+			Id:             uint(goal["id"].(uint64)),
+			Title:          goal["title"].(string),
+			Target_amount:  goal["target_amount"].(float64),
+			Current_amount: goal["current_amount"].(float64),
+			Deadline:       deadlineStr,
+			Percentage:     math.Round(goal["percentage"].(float64)*100) / 100,
+			Created_at:     createdAtStr,
 		})
 	}
 
 	return res, nil
 }
-
 
 func (s *GoalsServices) UpdateGoalsDataById(userId uint, id uint, req *dto.RequestGoals) (*model.Goal, error) {
 	// Ambil data goal lama dari database
@@ -122,7 +139,6 @@ func (s *GoalsServices) UpdateGoalsDataById(userId uint, id uint, req *dto.Reque
 	return existingGoal, nil
 }
 
-
 func (s *GoalsServices) DeleteGoalsDataById(userId uint, id uint) (*model.Goal, error) {
 	goal, err := s.repo.GetGoalById(userId, id)
 	if err != nil {
@@ -138,4 +154,27 @@ func (s *GoalsServices) DeleteGoalsDataById(userId uint, id uint) (*model.Goal, 
 	}
 
 	return goal, nil
+}
+
+func (s *GoalsServices) GetGoalsById(userId uint, id uint) (*dto.ResponseGoals, error) {
+	goal, err := s.repo.GetGoalById(userId, id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch goal: %w", err)
+	}
+
+	if goal == nil {
+		return nil, fmt.Errorf("goal not found")
+	}
+
+	// mapping ke DTO
+	res := &dto.ResponseGoals{
+		Id:             goal.ID,
+		Title:          goal.Title,
+		Target_amount:  goal.TargetAmount,
+		Current_amount: goal.CurrentAmount,
+		Deadline:       goal.Deadline.Format(time.RFC3339),
+		Created_at:     goal.CreatedAt.Format(time.RFC3339),
+	}
+
+	return res, nil
 }

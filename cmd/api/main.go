@@ -97,12 +97,15 @@ func main() {
 		//goals
 		v1.GET("/dashboard/goals/", middleware.AuthMiddleware(), goalsHandler.GetGoalDataByIdUser)
 		v1.POST("/dashboard/goals/", middleware.AuthMiddleware(), goalsHandler.CreateGoalsHandler)
+		v1.GET("/dashboard/goals/:id", middleware.AuthMiddleware(), goalsHandler.GetGoalsById)
 		v1.PUT("/dashboard/goals/:id", middleware.AuthMiddleware(), goalsHandler.UpdateGoalsHandler)
 		v1.DELETE("/dashboard/goals/:id", middleware.AuthMiddleware(), goalsHandler.DeleteGoalsHandler)
 
 		//goalsdepo
 		v1.GET("/dashboard/goals-depo/:id", middleware.AuthMiddleware(), goalsDepoHandler.GetDepoByID)
 		v1.POST("/dashboard/goals-depo/", middleware.AuthMiddleware(), goalsDepoHandler.CreateDepoHandler)
+		v1.PUT("/dashboard/goals-depo/:id", middleware.AuthMiddleware(), goalsDepoHandler.UpdateGoalsDepoHandler)
+		v1.DELETE("/dashboard/goals-depo/:id", middleware.AuthMiddleware(), goalsDepoHandler.DeleteGoalsDepoHandler)
 	}
 
 	fs := http.FileServer(http.Dir("static/"))

@@ -27,7 +27,6 @@ func (s *GoalsDepoService) CreateDepoServ(r *dto.RequestGoalsDepo) (*model.GoalD
 
 	// 2️⃣ Update goal progress
 	err := s.repo.AutomaticUpdateDepoInsert(r.Amount, r.GoalID)
-
 	if err != nil {
 		return nil, err
 	}
@@ -41,4 +40,29 @@ func (s *GoalsDepoService) GetDepoByID(userID, depoID uint) (*model.GoalDeposit,
 		return nil, err
 	}
 	return deposit, nil
+}
+
+func (s *GoalsDepoService) UpdateGoalsDepo(id uint, goal_id uint, userId uint, amount uint, note string) (*dto.ResponseGoalsDepo, error) {
+	deposit, err := s.repo.UpdateGoalsDepo(id, goal_id, userId, amount, note)
+	if err != nil {
+		return nil, err
+	}
+
+	res := dto.ResponseGoalsDepo{
+		ID:     deposit.ID,
+		GoalID: deposit.GoalID,
+		Amount: deposit.Amount,
+		Note:   deposit.Note,
+	}
+
+	return &res, nil
+}
+
+func (s *GoalsDepoService) DeleteGoalsDepo(id uint, userId uint) (*model.GoalDeposit, error) {
+	res, err := s.repo.DeleteGoalsDepo(id, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
