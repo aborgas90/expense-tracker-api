@@ -2,7 +2,6 @@ package handler
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -27,9 +26,6 @@ func (h *GoalsDepoHandler) CreateDepoHandler(c *gin.Context) {
 		response.ErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
-
-	fmt.Printf("DEBUG RequestGoalsDepo: %+v\n", req) // cek di console
-
 	res, err := h.svc.CreateDepoServ(&req)
 	if err != nil {
 		response.ErrorResponse(c, http.StatusInternalServerError, err.Error())
@@ -47,7 +43,6 @@ func (h *GoalsDepoHandler) CreateDepoHandler(c *gin.Context) {
 }
 
 func (h *GoalsDepoHandler) GetDepoByID(c *gin.Context) {
-	// ambil user_id dari middleware (contoh: disimpan di context)
 	userID := c.GetUint("user_id")
 	depoIDParam := c.Param("id")
 
@@ -60,7 +55,7 @@ func (h *GoalsDepoHandler) GetDepoByID(c *gin.Context) {
 	deposit, err := h.svc.GetDepoByID(userID, uint(depoID))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			response.ErrorResponse(c, http.StatusNotFound, "Deposit not found or unauthorized")
+			response.ErrorResponse(c, http.StatusNotFound, "Deposit not found ")
 			return
 		}
 		response.ErrorResponse(c, http.StatusInternalServerError, "Failed to retrieve deposit")

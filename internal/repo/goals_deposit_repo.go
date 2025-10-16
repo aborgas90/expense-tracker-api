@@ -20,7 +20,6 @@ func (gd *GoalsDepositRepo) CreateDeposit(deposit *model.GoalDeposit) error {
 	return gd.db.Create(deposit).Error
 }
 
-// updating for GoalsDeposit
 func (gd *GoalsDepositRepo) AutomaticUpdateDepoInsert(amount float64, id uint) error {
 	return gd.db.Model(&model.Goal{}).
 		Where("id = ?", id).

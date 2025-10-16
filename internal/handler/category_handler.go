@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/aborgas90/expense-tracker-api/internal/dto/category"
@@ -89,8 +88,6 @@ func (h *CategoryHandler) UpdateCategory(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	fmt.Println("Updated Category:", req)
 
 	response.SuccessResponse(c, 200, "Category updated successfully", updateCategory)
 }
